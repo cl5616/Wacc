@@ -1,0 +1,104 @@
+#!/usr/bin/ruby
+# Ruby front-end for your compiler.
+# You are free to change the language used for this script,
+# but do *not* change its name.
+
+puts "==========Compiling compiler=========="
+#puts `make`
+
+def compile(list, mode)
+  puts "==========compiling files============="
+  puts
+  total = list.length
+  success = 0
+  syntaxFailed = 0
+  semanticFailed = 0
+  sysErr = 0
+  count = 1
+  valid = Array.new
+  sysErrFile = Array.new
+
+  list.each do |file|
+    if File.file?(file)
+
+      basename = File.basename(file) + ":"
+      basename = basename.ljust(40)
+      print "#{basename}"
+
+      perc = ((count.fdiv(total)) * 100).round(2)
+      puts "#{perc}%"
+      count = count + 1
+
+      puts `java -cp bin:lib/antlr-4.4-complete.jar Compiler #{file}`
+      exitCode = $?.exitstatus
+
+      puts "#{basename}: compile finished with exit code: #{exitCode}"
+      puts
+
+      if exitCode == 100
+        syntaxFailed = syntaxFailed + 1
+      elsif exitCode == 200
+        semanticFailed = semanticFailed + 1
+      elsif exitCode == 1
+        sysErr = sysErr + 1
+        sysErrFile.insert(0, file)
+      else
+        success = success + 1
+        valid.insert(0, file)
+
+        assemblyFile = File.basename(file).split('.').first
+        #get filename and trim the .wacc extension.
+        #puts "#{assemblyFile}"
+
+        puts `arm-linux-gnueabi-gcc -o ARM/#{assemblyFile} -mcpu=arm1176jzf-s -mtune=arm1176jzf-s ARM/#{assemblyFile}.s`
+        puts `qemu-arm -L /usr/arm-linux-gnueabi/ #{assemblyFile}`
+
+
+      end
+
+      if mode == 1
+        exit exitCode
+      end
+
+    else
+      puts "#{file} is not a file"
+    end
+  end
+=begin
+  valid.each do |failed|
+    puts "#{failed}"
+    puts `./grun antlr.Basic main < #{failed}`
+    puts "--------------------------------------------"
+  end
+=end
+  puts "==========result======================"
+  puts "total: #{total} success: #{success} syntaxFailed: #{syntaxFailed} semanticFailed: #{semanticFailed} systemErr: #{sysErr}"
+  puts sysErrFile
+end
+
+
+if ARGV.length == 0
+#  files = `find ~/wacc_examples/valid -type f -name '*.wacc' -not -path '*/\.*'`.split
+  files = `find ~/extensionTest/valid -type f -name '*.wacc' -not -path '*/\.*'`.split
+  puts files.length
+  compile(files, 0)
+
+#  valid = `find ~/wacc_examples/valid -type f -name '*.wacc' -not -path '*/\.*'`.split
+  valid = `find ~/extensionTest/valid -type f -name '*.wacc' -not -path '*/\.*'`.split
+  noOfValid = valid.length
+
+  syntaxFailed = `find ./wacc_examples/invalid/syntaxErr -type f -name '*.wacc' -not -path '*/\.*'`.split
+  noOfSytaxFailed = syntaxFailed.length
+
+#  semanticFailed = `find ./wacc_examples/invalid/semanticErr -type f -name '*.wacc' -not -path '*/\.*'`.split
+  semanticFailed = `find ~/extensionTest/invalid/ -type f -name '*.wacc' -not -path '*/\.*`.split
+  noOfSemanticFailed = semanticFailed.length
+
+  puts "valid: #{noOfValid} syntaxErr: #{noOfSytaxFailed} semanticErr: #{noOfSemanticFailed}"
+else
+  compile(ARGV, 1)
+
+
+#`make clean`
+
+end

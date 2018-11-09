@@ -1,0 +1,97 @@
+#define EXIT 0
+#define ARRAY_ACCESS_LOAD 1 //followed by 3 u2
+#define ARRAY_ACCESS_STORE 2
+#define ASSIGN 3//followed by u2 u4 u4
+#define BINOP_ADD 4
+#define BINOP_SUB 5
+#define BINOP_MUL 6
+#define BINOP_DIV 7
+#define BINOP_MOD 8
+#define BINOP_EQ 9
+#define BINOP_GT 10
+#define BINOP_LT 11
+#define BINOP_GTE 12
+#define BINOP_LTE 13
+#define BINOP_NEQ 14
+#define BINOP_AND 15
+#define BINOP_OR 16
+#define CALL_DIRECT 17//u1 num of arg//u4 funcIdx//u2*(num+1) arg and ret
+#define CALL_VIRTUAL 18//u1 num of arg//u4 vtIdx//u2*(num+1) arg and ret
+#define CLASS_ACCESS_LOAD 19
+#define CLASS_ACCESS_STORE 20
+#define COND_JMP 21
+#define UNCOND_JMP 22
+#define FREE 23
+#define LOAD_VAR 24
+#define STORE_VAR 25
+#define NEW_ARRAY 26
+#define NEW_CLASS 27
+#define NEW_PAIR 28
+#define PAIR_ACCESS_FST_LOAD 29
+#define PAIR_ACCESS_FST_STORE 30
+#define PAIR_ACCESS_SND_LOAD 31
+#define PAIR_ACCESS_SND_STORE 32
+#define PRINT_INT 33
+#define PRINT_BOOL 34
+#define PRINT_CHAR 35
+#define PRINT_STRING 36
+#define PRINT_ARRAY_PAIR 37
+#define PRINTLN_INT 38
+#define PRINTLN_BOOL 39
+#define PRINTLN_CHAR 40
+#define PRINTLN_STRING 41
+#define PRINTLN_ARRAY_PAIR 42
+#define READ_INT 43
+#define READ_CHAR 44
+#define RETN 45
+#define UNOP_NOT 46
+#define UNOP_NEG 47
+#define UNOP_LEN 48
+#define UNOP_ORD 49
+#define UNOP_CHR 50
+#define UNOP_PLUS 51
+#define LOAD_ARG 52
+#define STORE_ARG 53
+#define LOAD_STRING 54
+
+#define TYPE_SIZE 1
+#define REG_IDX_SIZE 2
+#define STACK_IDX_SIZE 2
+#define U4_SIZE 4
+#define FUNC_IDX_SIZE 4
+#define VT_IDX_SIZE 2
+#define CLASS_IDX_SIZE 2
+#define FIELD_IDX_SIZE 2
+#define OPCODE_SIZE 1
+#define STRING_IDX_SIZE 4
+#define NUM_OF_ARG_SIZE 1
+
+#define ARRAY_ACCESS_SIZE (OPCODE_SIZE + REG_IDX_SIZE * 3 + TYPE_SIZE)
+#define ASSIGN_SIZE (OPCODE_SIZE + REG_IDX_SIZE + U4_SIZE)
+#define BINOP_SIZE (OPCODE_SIZE + REG_IDX_SIZE * 3)
+#define CALL_DIRECT_SIZE(argNum) (OPCODE_SIZE + NUM_OF_ARG_SIZE + FUNC_IDX_SIZE\
+            + REG_IDX_SIZE * ((argNum) + 1))
+#define CALL_VIRTUAL_SIZE(argNum) (OPCODE_SIZE + NUM_OF_ARG_SIZE + VT_IDX_SIZE\
+            + REG_IDX_SIZE * (argNum + 1))
+#define CLASS_ACCESS_SIZE (OPCODE_SIZE + CLASS_IDX_SIZE + FIELD_IDX_SIZE\
+            + REG_IDX_SIZE + REG_IDX_SIZE)
+#define COND_JMP_SIZE (OPCODE_SIZE + REG_IDX_SIZE + U4_SIZE)
+#define UNCOND_JMP_SIZE (OPCODE_SIZE + U4_SIZE)
+#define UN_COMMAND_SIZE (OPCODE_SIZE + REG_IDX_SIZE)
+#define LOAD_STORE_SIZE (OPCODE_SIZE + REG_IDX_SIZE + STACK_IDX_SIZE)
+#define NEW_ARRAY_SIZE (OPCODE_SIZE + TYPE_SIZE + REG_IDX_SIZE + U4_SIZE)
+#define NEW_CLASS_SIZE (OPCODE_SIZE + REG_IDX_SIZE + CLASS_IDX_SIZE)
+#define NEW_PAIR_SIZE (OPCODE_SIZE + REG_IDX_SIZE * 3)
+#define PAIR_ACCESS_SIZE (OPCODE_SIZE + REG_IDX_SIZE * 2)
+#define UNOP_SIZE (OPCODE_SIZE + REG_IDX_SIZE * 2)
+#define LOAD_STRING_SIZE (OPCODE_SIZE + REG_IDX_SIZE + STRING_IDX_SIZE)
+
+enum type
+{
+	BYTE_WACC = 1, DWORD_WACC = 4, INVALID_WACC = -1
+};
+
+enum heap_type
+{
+	ARRAY_WACC = 0, CLASS_WACC = 1, PAIR_WACC = 2, INVALIDH_WACC = -1
+};
